@@ -1,5 +1,5 @@
-# NanoBox
-A  nano server for .Net - because micro is too big§
+# Tarro
+A  nano server for .Net - because micro is too big
 ## What use is it?
 If you want to avoid hosting your webapp in IIS you have to write a bunch of plumbing to get it to run as a windows service (or use something like topshelf)
 What you do lose anyway is the dynamic reload which is annoying when you're doing automatic deployments
