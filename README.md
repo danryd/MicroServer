@@ -10,6 +10,7 @@ This little microsever allows you to host an executable, without external depend
 * Built in diagnostic logging
   * To console in UserInteractive mode
   * To eventlog as a service
+  
 ## Roadmap
 * Some sort of management interface
 * Multi application hosting in single server
