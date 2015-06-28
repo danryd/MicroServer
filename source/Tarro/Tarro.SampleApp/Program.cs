@@ -14,6 +14,7 @@ namespace Tarro.SampleApp
             AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 
             Log("Starting");
+            Log( Thread.CurrentThread.ManagedThreadId.ToString());
             Log("Conf: " + ConfigurationManager.AppSettings["setting"]);
             Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
 

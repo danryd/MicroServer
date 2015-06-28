@@ -1,15 +1,15 @@
 ﻿using System.ServiceProcess;
+using Tarro.Configuration;
 using Tarro.Logging;
 
 namespace Tarro
 {
     class ApplicationService : ServiceBase
     {
-        private readonly ILog log = LogFactory.GetLogger<ApplicationService>();
-        private Application app;
+        private readonly Container container;
         public ApplicationService()
         {
-            app = new Application(ServerSettings.Settings.PathToApp, ServerSettings.Settings.Executable);
+            container = new Container();
         }
 
         public void Start(string[] args)
@@ -18,12 +18,12 @@ namespace Tarro
         }
         protected override void OnStart(string[] args)
         {
-            app.Start();
+            container.Start();
         }
 
         protected override void OnStop()
         {
-            app.Dispose();
+            container.Dispose();
         }
 
     }

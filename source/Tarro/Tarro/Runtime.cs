@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
+using Tarro.Configuration;
 using Tarro.Logging;
 
 namespace Tarro
@@ -24,9 +25,9 @@ namespace Tarro
                 else
                 {
                     Console.WriteLine("Press a key to shut down");
-                    using (var application = new Application(ServerSettings.Settings.PathToApp, ServerSettings.Settings.Executable))
+                    using (var container = new Container())
                     {
-                        application.Start();
+                        container.Start();
                         Console.ReadKey();
                     }
 

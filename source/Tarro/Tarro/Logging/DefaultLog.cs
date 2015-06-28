@@ -15,17 +15,23 @@ namespace Tarro.Logging
         {
             loggerName = name;
             traceSource = new TraceSource(logSourceName);
-            traceSource.Switch.Level = SourceLevels.All;
+
             Trace.AutoFlush = true;
 
             eventLog = new EventLog(logSourceName);
 
 
             if (Environment.UserInteractive)
+            {
+                traceSource.Switch.Level = SourceLevels.All;
                 traceSource.Listeners.Add(new ColoredConsoleTraceListener());
-            else
-                traceSource.Listeners.Add(new EventLogTraceListener(logSourceName));
+            }
 
+            else
+            {
+                traceSource.Switch.Level = SourceLevels.Warning;
+                traceSource.Listeners.Add(new EventLogTraceListener(logSourceName));
+            }
         }
 
         private string ExceptionToString(Exception exception)

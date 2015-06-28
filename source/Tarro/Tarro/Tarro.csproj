@@ -47,13 +47,16 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="AppWatcher.cs" />
+    <Compile Include="Configuration\ApplicationElement.cs" />
+    <Compile Include="Configuration\ApplicationCollection.cs" />
+    <Compile Include="Container.cs" />
     <Compile Include="Logging\ColoredConsoleTraceListener.cs" />
     <Compile Include="Logging\DefaultLog.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Configuration\Settings.cs" />
     <Compile Include="ApplicationService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -61,6 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Management\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
