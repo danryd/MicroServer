@@ -4,7 +4,7 @@ A  nano application container for .Net - because micro is too big
 If you want to avoid hosting your webapp in IIS or have another long running service of some kind you have to write a bunch of plumbing to get it to run as a windows service (or use something like topshelf).
 
 What you do lose anyway is the dynamic reload which is annoying when you're doing automatic deployments
-This little nanoserver allows you to host an executable, without external dependencies.
+This little nanoserver allows you to host executables, without external dependencies.
 
 ## Features
 * Hosting in windows service, installable from the command line
@@ -15,14 +15,16 @@ This little nanoserver allows you to host an executable, without external depend
   
 ## Roadmap
 * Some sort of management interface
-* Multi application hosting in single server
+
 
 ## Instructions
 Download, build and run.
 ### Configure
-Edit the tarro.config, set the path to the target application, and the exe to the target executable, ex:
+Edit the tarro.config, add an applicaiton set the path to the target application, and the exe to the target executable, ex:
 
-    <Tarro pathToApp="..\..\..\Tarro.SampleApp\bin\debug" executable="Tarro.SampleApp.exe"/>
+    <Tarro>
+     <add name="sample" pathToApp="..\..\..\Tarro.SampleApp\bin\debug" executable="Tarro.SampleApp.exe"/>
+    </Tarro
 
 ###Run in console
 At this point you can runt the tarro.exe and it will host your applicaiton. If you run it on the command line it will log to the console. If you run it as a service it will log errors to the eventlog.
