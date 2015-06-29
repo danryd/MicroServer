@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="TarroConfiguration"
+    targetNamespace="http://tarro.github.io/TarroConfiguration.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://tarro.github.io/TarroConfiguration.xsd"
+    xmlns:mstns="http://tarro.github.io/TarroConfiguration.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="Tarro">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="applications">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="add">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="name" use="required"/>
+                      <xs:attribute type="xs:string" name="pathToApp" use="required"/>
+                      <xs:attribute type="xs:string" name="executable" use="required"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="instanceName" />
+      <xs:attribute type="xs:integer" name="managementPort" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

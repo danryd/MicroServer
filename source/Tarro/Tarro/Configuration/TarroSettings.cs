@@ -2,12 +2,12 @@
 
 namespace Tarro.Configuration
 {
-    internal class ServerSettings : ConfigurationSection
+    internal class TarroSettings : ConfigurationSection
     {
-        private static readonly ServerSettings settings
-          = ConfigurationManager.GetSection("Tarro") as ServerSettings;
+        private static readonly TarroSettings settings
+          = ConfigurationManager.GetSection("Tarro") as TarroSettings;
 
-        public static ServerSettings Settings
+        public static TarroSettings Settings
         {
             get
             {

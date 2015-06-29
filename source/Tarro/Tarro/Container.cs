@@ -19,7 +19,7 @@ namespace Tarro
         }
         internal void Start()
         {
-            foreach (var appElement in ServerSettings.Settings.Applications)
+            foreach (var appElement in TarroSettings.Settings.Applications)
             {
                 var application = new Application(appElement.Name, appElement.PathToApp, appElement.Executable);
                 var appThread = new ApplicationThread(application);
