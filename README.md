@@ -15,7 +15,7 @@ This little nanoserver allows you to host executables, without external dependen
   
 ## Roadmap
 * Some sort of management interface
-
+* Configurable runtime account per application
 
 ## Instructions
 Download, build and run.
@@ -24,7 +24,7 @@ Edit the tarro.config, add an applicaiton set the path to the target application
 
     <Tarro>
      <add name="sample" pathToApp="..\..\..\Tarro.SampleApp\bin\debug" executable="Tarro.SampleApp.exe"/>
-    </Tarro
+    </Tarro>
 
 ###Run in console
 At this point you can runt the tarro.exe and it will host your applicaiton. If you run it on the command line it will log to the console. If you run it as a service it will log errors to the eventlog.
