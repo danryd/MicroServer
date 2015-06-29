@@ -1,6 +1,8 @@
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.Text;
+using Tarro.Configuration;
 
 namespace Tarro.Logging
 {
@@ -10,7 +12,7 @@ namespace Tarro.Logging
         private readonly EventLog eventLog;
         private readonly string loggerName;
         private static readonly string logSourceName = "Tarro";
-
+        private const string eventLogName = "Application";
         public DefaultLog(string name)
         {
             loggerName = name;
@@ -18,19 +20,18 @@ namespace Tarro.Logging
 
             Trace.AutoFlush = true;
 
-            eventLog = new EventLog(logSourceName);
-
-
+         
+            traceSource.Switch.Level = SourceLevels.All;
             if (Environment.UserInteractive)
             {
-                traceSource.Switch.Level = SourceLevels.All;
                 traceSource.Listeners.Add(new ColoredConsoleTraceListener());
             }
 
             else
             {
-                traceSource.Switch.Level = SourceLevels.Warning;
-                traceSource.Listeners.Add(new EventLogTraceListener(logSourceName));
+                eventLog = new EventLog(eventLogName);
+                eventLog.Source = logSourceName;
+                traceSource.Listeners.Add(new EventLogTraceListener(eventLog));
             }
         }
 
@@ -50,6 +51,8 @@ namespace Tarro.Logging
         private void Log(TraceEventType type, string format, Exception exception, params object[] parameters)
         {
             var sb = new StringBuilder();
+            if (ServerSettings.Settings.InstanceName != null)
+                sb.Append("[" + ServerSettings.Settings.InstanceName + "]");
             sb.Append("[" + loggerName + "]");
             sb.Append(" ");
             sb.AppendLine(String.Format(format, parameters));
