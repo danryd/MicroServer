@@ -10,7 +10,7 @@ namespace Tarro
     internal class Application : IDisposable
     {
         private readonly ILog log = LogFactory.GetLogger<Application>();
-        private string name;
+        private readonly string name;
         private readonly string pathToApp;
         private readonly string executable;
         private readonly AppWatcher watcher;
@@ -32,17 +32,19 @@ namespace Tarro
         {
             try
             {
-                log.Info("Starting application");
+                log.Info("Starting application ({0})",name);
                 var setup = new AppDomainSetup();
                 CreateSetup(setup);
                 appDomain = AppDomain.CreateDomain(setup.ApplicationName, new Evidence(), setup);
+                appDomain.UnhandledException +=
+                    (sender, args) => log.Error("Unhandled exception in application {0}", name);  
                 appDomain.ExecuteAssembly(Path.Combine(pathToApp, executable));
 
-                log.Info("Application started");
+                log.Info("Application started ({0})", name);
             }
             catch (Exception ex)
             {
-                log.Error("Unable to start application", ex);
+                log.Error("Unable to start application ({0})", ex, name);
             }
         }
 
