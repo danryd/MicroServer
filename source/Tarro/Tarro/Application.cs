@@ -32,12 +32,11 @@ namespace Tarro
         {
             try
             {
-                log.Info("Starting application ({0})",name);
+                log.Info("Starting application ({0})", name);
                 var setup = new AppDomainSetup();
                 CreateSetup(setup);
+
                 appDomain = AppDomain.CreateDomain(setup.ApplicationName, new Evidence(), setup);
-                appDomain.UnhandledException +=
-                    (sender, args) => log.Error("Unhandled exception in application {0}", name);  
                 appDomain.ExecuteAssembly(Path.Combine(pathToApp, executable));
 
                 log.Info("Application started ({0})", name);
@@ -78,4 +77,5 @@ namespace Tarro
 
         public string Name { get { return name; } }
     }
+
 }
