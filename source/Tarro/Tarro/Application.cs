@@ -24,6 +24,9 @@ namespace Tarro
             watcher.AppChanged += (o, e) =>
             {
                 Stop();
+            };
+            watcher.AfterQuietPeriod += (o, e) =>
+            {
                 Start();
             };
         }
@@ -59,10 +62,16 @@ namespace Tarro
                 setup.ConfigurationFile = potentialConfigFile;
         }
 
+        private object unloadLock = new object();
         private void Stop()
         {
-            AppDomain.Unload(appDomain);
-            appDomain = null;
+            lock (unloadLock)
+                if (appDomain != null)
+                {
+
+                    AppDomain.Unload(appDomain);
+                    appDomain = null;
+                }
         }
 
 
