@@ -17,7 +17,7 @@ namespace Tarro.SampleApp
             Log( Thread.CurrentThread.ManagedThreadId.ToString());
             Log("Conf: " + ConfigurationManager.AppSettings["setting"]);
             Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
-
+            Console.ReadKey();
         }
         private static void Log(string message)
         {
