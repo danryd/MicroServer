@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tarro.Configuration;
 using Tarro.Logging;
+using Tarro.Management;
 
 namespace Tarro
 {
@@ -14,9 +15,11 @@ namespace Tarro
     {
         private readonly ILog log = LogFactory.GetLogger<Container>();
         private readonly List<ApplicationThread> applications;
+        private readonly HttpServer server;
         public Container()
         {
             applications = new List<ApplicationThread>();
+            server = new HttpServer(new Routes().ConfiguredRoutes);
         }
         internal void Start()
         {
@@ -32,6 +35,15 @@ namespace Tarro
 
         public void Dispose()
         {
+            try
+            {
+                server.Dispose();
+            }
+            catch (Exception ex)
+            {
+
+                log.Warn("Could not dispose http server.", ex);
+            }
             foreach (var application in applications)
             {
                 try
@@ -43,7 +55,7 @@ namespace Tarro
                     log.Warn("Could not dispose application {0}", ex, application.Name);
                 }
             }
-          
+
         }
 
         private class ApplicationThread : IDisposable
