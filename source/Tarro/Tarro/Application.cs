@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Security.AccessControl;
-using System.Security.Policy;
-using System.Threading;
 using Tarro.Logging;
 
 namespace Tarro
@@ -15,7 +12,9 @@ namespace Tarro
         private readonly string pathToApp;
         private readonly string executable;
         private readonly AppWatcher watcher;
-        private Process process;// appDomain;
+
+        private Process process;
+
         private readonly string cachePath = "appCache";
         public Application(string name, string pathToApp, string executable)
         {
@@ -45,20 +44,20 @@ namespace Tarro
                 process.StartInfo = setup;
                 process.EnableRaisingEvents = true;
                 process.Exited += process_Exited;
-                pipe = new Thread(() =>
-                {
-                    while (!process.HasExited)
-                        Console.Out.Write((char)process.StandardOutput.Read());
-
-
-                });
 
                 process.Start();
-                pipe.Start();
 
-                //appDomain = AppDomain.CreateDomain(setup.ApplicationName, new Evidence(), setup);
-                //appDomain.ExecuteAssembly(Path.Combine(pathToApp, executable));
 
+                if (Environment.UserInteractive)
+                {
+                    process.ErrorDataReceived += (sendingProcess, errorLine) => log.Error(string.Format("[{0}] {1}",process.ProcessName, errorLine.Data));
+                    process.OutputDataReceived += (sendingProcess, dataLine) => log.Info(string.Format("[{0}] {1}",process.ProcessName,dataLine.Data));
+                    
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    
+
+                }
                 log.Info("Application started ({0})", name);
             }
             catch (Exception ex)
@@ -132,7 +131,6 @@ namespace Tarro
             }
         }
 
-        private Thread pipe;
         private ProcessStartInfo CreateSetup()
         {
             var setup = new ProcessStartInfo();
@@ -140,6 +138,9 @@ namespace Tarro
             setup.WorkingDirectory = ShadowPath;
             setup.UseShellExecute = false;
             setup.RedirectStandardOutput = true;
+            setup.RedirectStandardError = true;
+            //setup.RedirectStandardInput = true;
+
             return setup;
         }
 
