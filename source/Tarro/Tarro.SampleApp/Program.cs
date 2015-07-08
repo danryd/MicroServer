@@ -10,19 +10,21 @@ namespace Tarro.SampleApp
         private static Timer timer;
         static void Main(string[] args)
         {
-            timer = new Timer(state => Log("Heartbeat"),null,TimeSpan.Zero,TimeSpan.FromSeconds(5));
+            timer = new Timer(state => Log("Heartbeat"), null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
             AppDomain.CurrentDomain.DomainUnload += CurrentDomain_DomainUnload;
 
             Log("Starting");
-            Log( Thread.CurrentThread.ManagedThreadId.ToString());
+            Log(Thread.CurrentThread.ManagedThreadId.ToString());
             Log("Conf: " + ConfigurationManager.AppSettings["setting"]);
             Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
-
+            Console.ReadKey();
         }
+
         private static void Log(string message)
         {
-            message = DateTime.Now.ToString("hh:mm:ss") + " " + message;
+            message = DateTime.Now.ToString("HH:mm:ss") + " " + message;
             Console.WriteLine(message);
+
         }
 
         static void CurrentDomain_DomainUnload(object sender, EventArgs e)
@@ -31,6 +33,6 @@ namespace Tarro.SampleApp
             timer.Dispose();
         }
 
-       
+
     }
 }
