@@ -19,7 +19,7 @@ namespace Tarro
         public Container()
         {
             applications = new List<ApplicationThread>();
-            server = new HttpServer(new Routes().ConfiguredRoutes);
+            server = new HttpServer(new RoutingHandler(new NotFoundHandler(null)))  ;
         }
         internal void Start()
         {

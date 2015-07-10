@@ -55,8 +55,12 @@
     <Compile Include="Logging\ColoredConsoleTraceListener.cs" />
     <Compile Include="Logging\DefaultLog.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Management\Handler.cs" />
     <Compile Include="Management\HttpServer.cs" />
+    <Compile Include="Management\FuncHandler.cs" />
+    <Compile Include="Management\NotFoundHandler.cs" />
     <Compile Include="Management\Routes.cs" />
+    <Compile Include="Management\RoutingHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime.cs" />

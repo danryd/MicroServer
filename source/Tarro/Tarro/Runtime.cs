@@ -29,6 +29,7 @@ namespace Tarro
                     {
                         container.Start();
                         Console.ReadKey();
+                        container.Dispose();
                     }
 
                 }
