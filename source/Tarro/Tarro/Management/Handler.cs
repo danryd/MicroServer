@@ -19,5 +19,6 @@ namespace Tarro.Management
         
         public abstract  Task Handle(HttpListenerContext context);
         public bool IsDone { get; set; }
+        internal Handler Next { get{return next;} }
     }
 }

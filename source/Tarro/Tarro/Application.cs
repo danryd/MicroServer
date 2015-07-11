@@ -148,11 +148,10 @@ namespace Tarro
         private void Stop()
         {
             lock (unloadLock)
-                if (process != null)
+                if (!process.HasExited)
                 {
-
                     process.Kill();
-                    process = null;
+                    process.Close();
                 }
         }
 

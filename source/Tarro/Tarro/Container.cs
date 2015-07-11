@@ -15,11 +15,11 @@ namespace Tarro
     {
         private readonly ILog log = LogFactory.GetLogger<Container>();
         private readonly List<ApplicationThread> applications;
-        private readonly HttpServer server;
+        private readonly ManagementApplication managementApplication;
         public Container()
         {
             applications = new List<ApplicationThread>();
-            server = new HttpServer(new RoutingHandler(new NotFoundHandler(null)))  ;
+            managementApplication = new ManagementApplication();
         }
         internal void Start()
         {
@@ -30,14 +30,15 @@ namespace Tarro
                 appThread.Start();
                 applications.Add(appThread);
             }
-
+            managementApplication.AddHandler<RoutingHandler>();
+            managementApplication.Start();
         }
 
         public void Dispose()
         {
             try
             {
-                server.Dispose();
+                managementApplication.Dispose();
             }
             catch (Exception ex)
             {

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Tarro.Management
 {
-      class HttpServer : IDisposable
+    class HttpServer : IDisposable
     {
         private readonly HttpListener listener;
 
@@ -24,8 +23,18 @@ namespace Tarro.Management
         {
             while (listener.IsListening)
             {
-                 var ctx = await listener.GetContextAsync();
-                await handler.Handle(ctx);
+                var ctx = await listener.GetContextAsync();
+                Exception ex = null;
+                try
+                {
+                    await handler.Handle(ctx);
+                }
+                catch (Exception e)
+                {
+                    ex = e;
+                }
+                if (ex != null)
+                    await new ErrorHandler(null).Handle(ctx);
             }
 
         }

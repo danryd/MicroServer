@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7E9A9604-EBD5-422E-9AFB-AF225AE190A5}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{E3FEF064-A7FE-46FE-B72E-4A6FB1BBA246}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tarro</RootNamespace>
-    <AssemblyName>Tarro</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>Tarro.Tests</RootNamespace>
+    <AssemblyName>Tarro.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,21 +22,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Fixie">
+      <HintPath>..\packages\Fixie.1.0.0.15\lib\net45\Fixie.dll</HintPath>
+    </Reference>
+    <Reference Include="Should">
+      <HintPath>..\packages\Should.1.1.20\lib\Should.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,39 +45,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application.cs" />
-    <Compile Include="AppWatcher.cs" />
-    <Compile Include="Configuration\ApplicationElement.cs" />
-    <Compile Include="Configuration\ApplicationCollection.cs" />
-    <Compile Include="Configuration\TarroSettings.cs" />
-    <Compile Include="Container.cs" />
-    <Compile Include="Logging\ColoredConsoleTraceListener.cs" />
-    <Compile Include="Logging\DefaultLog.cs" />
-    <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Management\ErrorHandler.cs" />
-    <Compile Include="Management\Handler.cs" />
-    <Compile Include="Management\HandlerFactory.cs" />
-    <Compile Include="Management\HttpServer.cs" />
-    <Compile Include="Management\FuncHandler.cs" />
-    <Compile Include="Management\ManagementApplication.cs" />
-    <Compile Include="Management\NotFoundHandler.cs" />
-    <Compile Include="Management\Routes.cs" />
-    <Compile Include="Management\RoutingHandler.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Management\HandlerFactoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runtime.cs" />
-    <Compile Include="ApplicationService.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WindowsServiceInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="Configuration\TarroConfiguration.xsd">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Tarro\Tarro.csproj">
+      <Project>{7E9A9604-EBD5-422E-9AFB-AF225AE190A5}</Project>
+      <Name>Tarro</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

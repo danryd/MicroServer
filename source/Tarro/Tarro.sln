@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro", "Tarro\Tarro.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro.SampleApp", "Tarro.SampleApp\Tarro.SampleApp.csproj", "{8836D697-77EE-4647-8590-07B157443B1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro.Tests", "Tarro.Tests\Tarro.Tests.csproj", "{E3FEF064-A7FE-46FE-B72E-4A6FB1BBA246}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{8836D697-77EE-4647-8590-07B157443B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8836D697-77EE-4647-8590-07B157443B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8836D697-77EE-4647-8590-07B157443B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3FEF064-A7FE-46FE-B72E-4A6FB1BBA246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3FEF064-A7FE-46FE-B72E-4A6FB1BBA246}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3FEF064-A7FE-46FE-B72E-4A6FB1BBA246}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3FEF064-A7FE-46FE-B72E-4A6FB1BBA246}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
