@@ -12,7 +12,7 @@ namespace Tarro
         private readonly string pathToApp;
         private readonly string executable;
         private readonly AppWatcher watcher;
-
+        private readonly AppCopy appCopy;
         private Process process;
 
         private readonly string cachePath = "appCache";
@@ -21,6 +21,7 @@ namespace Tarro
             this.name = name;
             this.pathToApp = pathToApp;
             this.executable = executable;
+            appCopy =  new AppCopy(cachePath,pathToApp,executable);
             watcher = new AppWatcher(pathToApp);
             watcher.AppChanged += (o, e) =>
             {
@@ -36,29 +37,35 @@ namespace Tarro
         {
             try
             {
-                log.Info("Starting application ({0})", name);
-                ShadowCopy();
-                var setup = CreateSetup();
 
-                process = new Process();
-                process.StartInfo = setup;
-                process.EnableRaisingEvents = true;
-                process.Exited += process_Exited;
-
-                process.Start();
-
-
-                if (Environment.UserInteractive)
+                lock (processLock)
                 {
-                    process.ErrorDataReceived += (sendingProcess, errorLine) => log.Error(string.Format("[{0}] {1}",process.ProcessName, errorLine.Data));
-                    process.OutputDataReceived += (sendingProcess, dataLine) => log.Info(string.Format("[{0}] {1}",process.ProcessName,dataLine.Data));
-                    
-                    process.BeginErrorReadLine();
-                    process.BeginOutputReadLine();
-                    
+                    if(process!=null) //Should be null if stopped
+                        return;
+                    log.Info("Starting application ({0})", name);
+                    appCopy.ShadowCopy();
+                    var setup = CreateSetup();
+                    process = new Process();
+                    process.StartInfo = setup;
+                    process.EnableRaisingEvents = true;
+                    process.Exited += process_Exited;
 
+                    process.Start();
+
+
+                    if (Environment.UserInteractive)
+                    {
+                        process.ErrorDataReceived += (sendingProcess, errorLine) => log.Error(string.Format("[{0}] {1}", process.ProcessName, errorLine.Data));
+                        process.OutputDataReceived += (sendingProcess, dataLine) => log.Info(string.Format("[{0}] {1}", process.ProcessName, dataLine.Data));
+
+                        process.BeginErrorReadLine();
+                        process.BeginOutputReadLine();
+
+
+                    } 
+                    log.Info("Application started ({0})", name);
                 }
-                log.Info("Application started ({0})", name);
+
             }
             catch (Exception ex)
             {
@@ -70,72 +77,13 @@ namespace Tarro
         {
             log.Warn("Process exit");
         }
-
-        private void ShadowCopy()
-        {
-            CleanShadowDirectory();
-            DirectoryCopy(pathToApp, ShadowPath, true);
-        }
-
-        private void CleanShadowDirectory()
-        {
-            var directory = new DirectoryInfo(ShadowPath);
-            if (directory.Exists)
-                directory.Delete(true);
-        }
-
-        private string ShadowPath
-        {
-            get
-            {
-                var shadowPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cachePath, executable);
-                return shadowPath;
-            }
-        }
-
-        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
-        {
-            // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            if (!dir.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + sourceDirName);
-            }
-
-            // If the destination directory doesn't exist, create it. 
-            if (!Directory.Exists(destDirName))
-            {
-                Directory.CreateDirectory(destDirName);
-            }
-
-            // Get the files in the directory and copy them to the new location.
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                string temppath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(temppath, false);
-            }
-
-            // If copying subdirectories, copy them and their contents to new location. 
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subdir in dirs)
-                {
-                    string temppath = Path.Combine(destDirName, subdir.Name);
-                    DirectoryCopy(subdir.FullName, temppath, copySubDirs);
-                }
-            }
-        }
+     
 
         private ProcessStartInfo CreateSetup()
         {
             var setup = new ProcessStartInfo();
-            setup.FileName = Path.Combine(ShadowPath, executable);
-            setup.WorkingDirectory = ShadowPath;
+            setup.FileName = Path.Combine(appCopy.ShadowPath, executable);
+            setup.WorkingDirectory = appCopy.ShadowPath;
             setup.UseShellExecute = false;
             setup.RedirectStandardOutput = true;
             setup.RedirectStandardError = true;
@@ -144,14 +92,15 @@ namespace Tarro
             return setup;
         }
 
-        private readonly object unloadLock = new object();
+        private readonly object processLock = new object();
         private void Stop()
         {
-            lock (unloadLock)
-                if (!process.HasExited)
+            lock (processLock)
+                if (process != null)
                 {
                     process.Kill();
                     process.Close();
+                    process = null;
                 }
         }
 

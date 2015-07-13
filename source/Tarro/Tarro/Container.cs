@@ -14,11 +14,11 @@ namespace Tarro
     internal class Container : IDisposable
     {
         private readonly ILog log = LogFactory.GetLogger<Container>();
-        private readonly List<ApplicationThread> applications;
+        private readonly List<ApplicationThread> appThreads;
         private readonly ManagementApplication managementApplication;
         public Container()
         {
-            applications = new List<ApplicationThread>();
+            appThreads = new List<ApplicationThread>();
             managementApplication = new ManagementApplication();
         }
         internal void Start()
@@ -28,9 +28,9 @@ namespace Tarro
                 var application = new Application(appElement.Name, appElement.PathToApp, appElement.Executable);
                 var appThread = new ApplicationThread(application);
                 appThread.Start();
-                applications.Add(appThread);
+                appThreads.Add(appThread);
             }
-            managementApplication.AddHandler<RoutingHandler>();
+            managementApplication.AddHandler<RoutingHandler>(new RoutingOptions(appThreads.Select(a=>a.Application)));
             managementApplication.Start();
         }
 
@@ -45,15 +45,15 @@ namespace Tarro
 
                 log.Warn("Could not dispose http server.", ex);
             }
-            foreach (var application in applications)
+            foreach (var appThread in appThreads)
             {
                 try
                 {
-                    application.Dispose();
+                    appThread.Dispose();
                 }
                 catch (Exception ex)
                 {
-                    log.Warn("Could not dispose application {0}", ex, application.Name);
+                    log.Warn("Could not dispose application {0}", ex, appThread.Application.Name);
                 }
             }
 
@@ -62,7 +62,7 @@ namespace Tarro
         private class ApplicationThread : IDisposable
         {
             private readonly Application application;
-            public object Name { get { return application.Name; } }
+            public Application Application{ get { return application; } }
 
             private Thread thread;
             public ApplicationThread(Application application)

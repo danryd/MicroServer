@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppCopy.cs" />
     <Compile Include="Application.cs" />
     <Compile Include="AppWatcher.cs" />
     <Compile Include="Configuration\ApplicationElement.cs" />
