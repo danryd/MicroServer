@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Tarro.Management
 {
-    class RootController
+    class RootController:Controller 
     {
+        protected override async Task<string> Content()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

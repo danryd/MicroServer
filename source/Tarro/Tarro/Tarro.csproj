@@ -57,6 +57,7 @@
     <Compile Include="Logging\DefaultLog.cs" />
     <Compile Include="Logging\LogSinks.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Management\Controller.cs" />
     <Compile Include="Management\ErrorHandler.cs" />
     <Compile Include="Management\Handler.cs" />
     <Compile Include="Management\HandlerFactory.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Management\FuncHandler.cs" />
     <Compile Include="Management\ManagementApplication.cs" />
     <Compile Include="Management\NotFoundHandler.cs" />
+    <Compile Include="Management\RootController.cs" />
     <Compile Include="Management\Routes.cs" />
     <Compile Include="Management\RoutingHandler.cs" />
     <Compile Include="Program.cs" />
