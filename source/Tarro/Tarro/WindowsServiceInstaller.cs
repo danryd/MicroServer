@@ -4,6 +4,7 @@ using System.Configuration.Install;
 using System.IO;
 using System.Reflection;
 using System.ServiceProcess;
+using Tarro.Logging;
 
 namespace Tarro
 {
@@ -60,7 +61,13 @@ namespace Tarro
             var context = new InstallContext(null, commandLine);
             transactedInstaller.Context = context;
             transactedInstaller.Install(stateSaver);
+            InitializeEventSource();
 
+        }
+
+        private void InitializeEventSource()
+        {
+            LogSinks.EventLog().WriteEntry("Installed service");
         }
 
         public void Uninstall(IDictionary stateSaver)
