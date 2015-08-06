@@ -20,5 +20,13 @@ namespace Tarro.Management
         public abstract  Task Handle(HttpListenerContext context);
         public bool IsDone { get; set; }
         internal Handler Next { get{return next;} }
+
+        protected static async Task ReturnResponse(HttpListenerContext context, int statusCode, string content)
+        {
+            context.Response.StatusCode = statusCode;
+            var bytes = Encoding.UTF8.GetBytes(content);
+            await context.Response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
+            context.Response.Close();
+        }
     }
 }

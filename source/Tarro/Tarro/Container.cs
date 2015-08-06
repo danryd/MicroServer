@@ -30,7 +30,8 @@ namespace Tarro
                 appThread.Start();
                 appThreads.Add(appThread);
             }
-            managementApplication.AddHandler<RoutingHandler>(new RoutingOptions(appThreads.Select(a=>a.Application)));
+            
+            managementApplication.AddHandler<RouteHandler>(new RouteOptions("/", (async context => await Task.FromResult("Hello"))));
             managementApplication.Start();
         }
 

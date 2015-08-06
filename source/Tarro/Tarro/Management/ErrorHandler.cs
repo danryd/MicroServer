@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Tarro.Management
@@ -7,11 +9,7 @@ namespace Tarro.Management
     {
         public override async Task Handle(System.Net.HttpListenerContext context)
         {
-            context.Response.StatusCode = 500;
-            var bytes = Encoding.UTF8.GetBytes("Internal Server Error");
-            await context.Response.OutputStream.WriteAsync(bytes, 0, bytes.Length);
-            context.Response.Close();
-         
+            await ReturnResponse(context, 500, "Internal Server Error");
         }
 
         public ErrorHandler(Handler next)
