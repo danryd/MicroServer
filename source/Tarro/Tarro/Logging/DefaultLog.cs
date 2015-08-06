@@ -9,14 +9,13 @@ namespace Tarro.Logging
     internal class DefaultLog : ILog
     {
         private readonly TraceSource traceSource;
-        private readonly EventLog eventLog;
         private readonly string loggerName;
-        private static readonly string logSourceName = "Tarro";
-        private const string eventLogName = "Application";
+       
+
         public DefaultLog(string name)
         {
             loggerName = name;
-            traceSource = new TraceSource(logSourceName);
+            traceSource = LogSinks.TraceSource();
 
             Trace.AutoFlush = true;
 
@@ -29,11 +28,13 @@ namespace Tarro.Logging
 
             else
             {
-                eventLog = new EventLog(eventLogName);
-                eventLog.Source = logSourceName;
+                var eventLog = LogSinks.EventLog();
+               
                 traceSource.Listeners.Add(new EventLogTraceListener(eventLog));
             }
         }
+
+       
 
         private string ExceptionToString(Exception exception)
         {

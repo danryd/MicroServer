@@ -52,6 +52,7 @@
     <Compile Include="Container.cs" />
     <Compile Include="Logging\ColoredConsoleTraceListener.cs" />
     <Compile Include="Logging\DefaultLog.cs" />
+    <Compile Include="Logging\LogSinks.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
