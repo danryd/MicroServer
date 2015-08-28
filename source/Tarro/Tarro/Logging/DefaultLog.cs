@@ -52,8 +52,8 @@ namespace Tarro.Logging
         private void Log(TraceEventType type, string format, Exception exception, params object[] parameters)
         {
             var sb = new StringBuilder();
-            if (ServerSettings.Settings.InstanceName != null)
-                sb.Append("[" + ServerSettings.Settings.InstanceName + "]");
+            if (TarroSettings.Settings.InstanceName != null)
+                sb.Append("[" + TarroSettings.Settings.InstanceName + "]");
             sb.Append("[" + loggerName + "]");
             sb.Append(" ");
             sb.AppendLine(String.Format(format, parameters));

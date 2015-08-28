@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace Tarro
 {
     internal class Container : IDisposable
     {
-        private ILog log = LogFactory.GetLogger<Container>();
+        private readonly ILog log = LogFactory.GetLogger<Container>();
         private readonly List<ApplicationThread> applications;
         public Container()
         {
@@ -19,7 +20,7 @@ namespace Tarro
         }
         internal void Start()
         {
-            foreach (var appElement in ServerSettings.Settings.Applications)
+            foreach (var appElement in TarroSettings.Settings.Applications)
             {
                 var application = new Application(appElement.Name, appElement.PathToApp, appElement.Executable);
                 var appThread = new ApplicationThread(application);
@@ -42,12 +43,13 @@ namespace Tarro
                     log.Warn("Could not dispose application {0}", ex, application.Name);
                 }
             }
+          
         }
 
-        private class ApplicationThread:IDisposable
+        private class ApplicationThread : IDisposable
         {
             private readonly Application application;
-            public object Name { get { return application.Name; }}
+            public object Name { get { return application.Name; } }
 
             private Thread thread;
             public ApplicationThread(Application application)
@@ -57,7 +59,8 @@ namespace Tarro
 
             internal void Start()
             {
-                thread = new Thread(()=> application.Start());
+                thread = new Thread(() => application.Start());
+                thread.IsBackground = true;
                 thread.Start();
             }
 
