@@ -22,12 +22,12 @@ namespace Tarro
             timer = new Timer(CalculateTimeoutInMs(timeoutInSeconds));
             timer.Elapsed += timer_Elapsed;
             timer.AutoReset = false;
-         
+
         }
 
         private static double CalculateTimeoutInMs(double timeoutInSeconds)
         {
-            return timeoutInSeconds*1000;
+            return timeoutInSeconds * 1000;
         }
 
 
@@ -57,9 +57,17 @@ namespace Tarro
 
         protected virtual void OnAppChanged()
         {
-            timer.Enabled = true;
+            ResetTimer();
+
             var handler = AppChanged;
             if (handler != null) handler(this, new AppChangedEventHandlerArgs());
+
+        }
+
+        private void ResetTimer()
+        {
+            timer.Stop();
+            timer.Start();
 
         }
 

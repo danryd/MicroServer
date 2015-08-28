@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro", "Tarro\Tarro.csproj", "{7E9A9604-EBD5-422E-9AFB-AF225AE190A5}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro", "Tarro\Tarro.csproj
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro.SampleApp", "Tarro.SampleApp\Tarro.SampleApp.csproj", "{8836D697-77EE-4647-8590-07B157443B1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tarro.Test", "Tarro.Test\Tarro.Test.csproj", "{85617FCC-00B4-44C3-BDA9-23E9D4C3E0F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{8836D697-77EE-4647-8590-07B157443B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8836D697-77EE-4647-8590-07B157443B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8836D697-77EE-4647-8590-07B157443B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85617FCC-00B4-44C3-BDA9-23E9D4C3E0F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85617FCC-00B4-44C3-BDA9-23E9D4C3E0F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85617FCC-00B4-44C3-BDA9-23E9D4C3E0F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85617FCC-00B4-44C3-BDA9-23E9D4C3E0F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
