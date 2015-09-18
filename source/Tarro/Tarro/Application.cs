@@ -1,26 +1,36 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Policy;
 using Tarro.Logging;
 
 namespace Tarro
 {
+    enum RunMode
+    {
+        AppDomain, Process
+    }
     internal class Application : IDisposable
     {
+
         private readonly ILog log = LogFactory.GetLogger<Application>();
         private readonly string name;
         private readonly string pathToApp;
         private readonly string executable;
         private readonly AppWatcher watcher;
-
+        private readonly AppCopy appCopy;
         private Process process;
-
+        private AppDomain domain;
+        private readonly RunMode runMode;
         private readonly string cachePath = "appCache";
-        public Application(string name, string pathToApp, string executable)
+        public Application(string name, string pathToApp, string executable, RunMode runMode = RunMode.AppDomain)
         {
             this.name = name;
             this.pathToApp = pathToApp;
             this.executable = executable;
+            this.runMode = runMode;
+
+            appCopy = new AppCopy(cachePath, pathToApp, executable);
             watcher = new AppWatcher(pathToApp);
             watcher.AppChanged += (o, e) =>
             {
@@ -36,29 +46,26 @@ namespace Tarro
         {
             try
             {
-                log.Info("Starting application ({0})", name);
-                ShadowCopy();
-                var setup = CreateSetup();
 
-                process = new Process();
-                process.StartInfo = setup;
-                process.EnableRaisingEvents = true;
-                process.Exited += process_Exited;
-
-                process.Start();
-
-
-                if (Environment.UserInteractive)
+                lock (appLock)
                 {
-                    process.ErrorDataReceived += (sendingProcess, errorLine) => log.Error(string.Format("[{0}] {1}",process.ProcessName, errorLine.Data));
-                    process.OutputDataReceived += (sendingProcess, dataLine) => log.Info(string.Format("[{0}] {1}",process.ProcessName,dataLine.Data));
-                    
-                    process.BeginErrorReadLine();
-                    process.BeginOutputReadLine();
-                    
-
+                    if (RuntimeIsActive()) //Should be null if stopped
+                        return;
+                    log.Info("Starting application ({0})", name);
+                    appCopy.ShadowCopy();
+                    switch (runMode)
+                    {
+                        case RunMode.AppDomain:
+                            StartAppdomain();
+                            break;
+                        case RunMode.Process:
+                            StartProcess();
+                            break;
+                        default:
+                            throw new InvalidOperationException("Unknown runmode");
+                    }
+                    log.Info("Application started ({0})", name);
                 }
-                log.Info("Application started ({0})", name);
             }
             catch (Exception ex)
             {
@@ -66,94 +73,106 @@ namespace Tarro
             }
         }
 
-        void process_Exited(object sender, EventArgs e)
+        private bool RuntimeIsActive()
         {
-            log.Warn("Process exit");
+            return runMode == RunMode.AppDomain && domain != null || runMode == RunMode.Process && process != null;
         }
 
-        private void ShadowCopy()
+
+        private void StartAppdomain()
         {
-            CleanShadowDirectory();
-            DirectoryCopy(pathToApp, ShadowPath, true);
+            var setup = AppDomainSetup();
+            appCopy.ShadowCopy();
+            domain = AppDomain.CreateDomain(executable, new Evidence(), setup);
+            domain.ExecuteAssembly(GetExecutablePath());
+            domain.DomainUnload += AppExited;
+            setup.ApplicationBase = pathToApp;
+
         }
 
-        private void CleanShadowDirectory()
+        private AppDomainSetup AppDomainSetup()
         {
-            var directory = new DirectoryInfo(ShadowPath);
-            if (directory.Exists)
-                directory.Delete(true);
+            var setup = new AppDomainSetup();
+            setup.ApplicationBase = pathToApp;
+
+            setup.ApplicationBase = appCopy.ShadowPath;
+            setup.PrivateBinPath = appCopy.ShadowPath;
+            var potentialConfigFile = executable + ".config";
+            if (File.Exists(Path.Combine(pathToApp, potentialConfigFile)))
+                setup.ConfigurationFile = potentialConfigFile;
+            return setup;
         }
 
-        private string ShadowPath
+        private void StartProcess()
         {
-            get
+            var setup = CreateSetup();
+            process = new Process();
+            process.StartInfo = setup;
+            process.EnableRaisingEvents = true;
+
+            process.Exited += AppExited;
+
+            process.Start();
+
+
+            if (Environment.UserInteractive)
             {
-                var shadowPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, cachePath, executable);
-                return shadowPath;
+                process.ErrorDataReceived +=
+                    (sendingProcess, errorLine) => log.Error(string.Format("[{0}] {1}", process.ProcessName, errorLine.Data));
+                process.OutputDataReceived +=
+                    (sendingProcess, dataLine) => log.Info(string.Format("[{0}] {1}", process.ProcessName, dataLine.Data));
+
+                process.BeginErrorReadLine();
+                process.BeginOutputReadLine();
             }
         }
-
-        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        void AppExited(object sender, EventArgs e)
         {
-            // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
-            DirectoryInfo[] dirs = dir.GetDirectories();
-
-            if (!dir.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Source directory does not exist or could not be found: "
-                    + sourceDirName);
-            }
-
-            // If the destination directory doesn't exist, create it. 
-            if (!Directory.Exists(destDirName))
-            {
-                Directory.CreateDirectory(destDirName);
-            }
-
-            // Get the files in the directory and copy them to the new location.
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                string temppath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(temppath, false);
-            }
-
-            // If copying subdirectories, copy them and their contents to new location. 
-            if (copySubDirs)
-            {
-                foreach (DirectoryInfo subdir in dirs)
-                {
-                    string temppath = Path.Combine(destDirName, subdir.Name);
-                    DirectoryCopy(subdir.FullName, temppath, copySubDirs);
-                }
-            }
+            log.Warn($"Application exited (Runmode:{runMode}");
         }
+
 
         private ProcessStartInfo CreateSetup()
         {
             var setup = new ProcessStartInfo();
-            setup.FileName = Path.Combine(ShadowPath, executable);
-            setup.WorkingDirectory = ShadowPath;
+            setup.FileName = GetExecutablePath();
+            setup.WorkingDirectory = appCopy.ShadowPath;
             setup.UseShellExecute = false;
             setup.RedirectStandardOutput = true;
             setup.RedirectStandardError = true;
+
             //setup.RedirectStandardInput = true;
 
             return setup;
         }
 
-        private readonly object unloadLock = new object();
+        private string GetExecutablePath()
+        {
+            return Path.Combine(appCopy.ShadowPath, executable);
+        }
+
+        private readonly object appLock = new object();
         private void Stop()
         {
-            lock (unloadLock)
-                if (process != null)
+            lock (appLock)
+                 switch (runMode)
                 {
-
-                    process.Kill();
-                    process = null;
+                    case RunMode.AppDomain:
+                        AppDomain.Unload(domain);
+                        domain = null;
+                        break;
+                    case RunMode.Process:
+                        if (process != null)
+                        {
+                            process.Kill();
+                            process.Close();
+                            process = null;
+                        }
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown runmode");
                 }
+
         }
 
 
