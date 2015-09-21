@@ -22,7 +22,7 @@ namespace Tarro
         {
             foreach (var appElement in TarroSettings.Settings.Applications)
             {
-                var application = new Application(appElement.Name, appElement.PathToApp, appElement.Executable);
+                var application = new Application(appElement.Name, appElement.PathToApp, appElement.Executable, appElement.RunMode);
                 var appThread = new ApplicationThread(application);
                 appThread.Start();
                 applications.Add(appThread);
