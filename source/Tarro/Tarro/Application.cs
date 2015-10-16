@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Security.Policy;
 using Tarro.Logging;
 
@@ -10,7 +11,7 @@ namespace Tarro
     {
         AppDomain, Process
     }
-    internal class Application : IDisposable
+    internal class Application : MarshalByRefObject, IDisposable
     {
 
         private readonly ILog log = LogFactory.GetLogger<Application>();
@@ -82,11 +83,10 @@ namespace Tarro
         private void StartAppdomain()
         {
             var setup = AppDomainSetup();
-            appCopy.ShadowCopy();
+
             domain = AppDomain.CreateDomain(executable, new Evidence(), setup);
             domain.ExecuteAssembly(GetExecutablePath());
-            domain.DomainUnload += AppExited;
-            setup.ApplicationBase = pathToApp;
+
 
         }
 
@@ -158,8 +158,21 @@ namespace Tarro
                  switch (runMode)
                 {
                     case RunMode.AppDomain:
-                        AppDomain.Unload(domain);
-                        domain = null;
+                        try
+                        {
+                            if (domain != null)
+                            {
+                                AppDomain.Unload(domain);
+                                domain = null;
+                            }
+                        }
+                        catch (AppDomainUnloadedException adue)
+                        {
+
+                            log.Warn("Appdomain was previously unloaded", adue);
+                        }
+
+
                         break;
                     case RunMode.Process:
                         if (process != null)
