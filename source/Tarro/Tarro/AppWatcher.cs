@@ -12,6 +12,7 @@ namespace Tarro
         private readonly FileSystemWatcher watcher;
         private readonly ILog log = LogFactory.GetLogger<AppWatcher>();
         private readonly Timer timer;
+        private bool isQuietPeriod = false;
         public AppWatcher(string path, double timeoutInSeconds = 1)
         {
             watcher = new FileSystemWatcher(path);
@@ -66,9 +67,12 @@ namespace Tarro
             if (IsCodeOrConfig(lowerName))
             {
                 ResetTimer();
-
-                var handler = AppChanged;
-                if (handler != null) handler(this, new AppChangedEventHandlerArgs());
+                if (!isQuietPeriod)
+                {
+                    isQuietPeriod = true;
+                    var handler = AppChanged;
+                    if (handler != null) handler(this, new AppChangedEventHandlerArgs());
+                }
             }
         }
 
@@ -93,6 +97,7 @@ namespace Tarro
         protected virtual void OnAfterQuietPeriod()
         {
             log.Verbose($"Quiet period ended");
+            isQuietPeriod = false;
             var handler = AfterQuietPeriod;
             if (handler != null) handler(this, new AfterQuietPeriodEventArgs());
         }
