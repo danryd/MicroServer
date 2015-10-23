@@ -29,7 +29,7 @@ namespace Tarro
 
         private static double CalculateTimeoutInMs(double timeoutInSeconds)
         {
-            return timeoutInSeconds * 1000;
+            return timeoutInSeconds * 2000;
         }
 
 

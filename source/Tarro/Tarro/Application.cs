@@ -43,34 +43,54 @@ namespace Tarro
             };
         }
 
+        private enum RuntimeState
+        {
+            Stopped, Starting, Running,
+            Stopping
+        }
+        private RuntimeState state = RuntimeState.Stopped;
         public void Start()
         {
             try
             {
-
                 lock (appLock)
                 {
-                    if (RuntimeIsActive()) //Should be null if stopped
-                        return;
-                    log.Info("Starting application ({0})", name);
-                    appCopy.ShadowCopy();
-                    switch (runMode)
+                    try
                     {
-                        case RunMode.AppDomain:
-                            StartAppdomain();
-                            break;
-                        case RunMode.Process:
-                            StartProcess();
-                            break;
-                        default:
-                            throw new InvalidOperationException("Unknown runmode");
+                        log.Info("Starting application ({0}), current state {1}", name, state);
+                        if (state != RuntimeState.Stopped)
+                            return;
+                        state = RuntimeState.Starting;
+                        if (RuntimeIsActive()) //Should be null if stopped
+                            return;
+
+                        appCopy.ShadowCopy();
+                        switch (runMode)
+                        {
+                            case RunMode.AppDomain:
+                                StartAppdomain();
+                                break;
+                            case RunMode.Process:
+                                StartProcess();
+                                break;
+                            default:
+                                throw new InvalidOperationException("Unknown runmode");
+                        }
+                        log.Info("Application started ({0})", name);
+                        state = RuntimeState.Running;
+
                     }
-                    log.Info("Application started ({0})", name);
+                    catch (Exception)
+                    {
+                        state = RuntimeState.Stopped;
+                        throw;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 log.Error("Unable to start application ({0})", ex, name);
+                state = RuntimeState.Stopped;
             }
         }
 
@@ -84,8 +104,18 @@ namespace Tarro
         {
             var setup = AppDomainSetup();
 
-            domain = AppDomain.CreateDomain(executable, new Evidence(), setup);
-            domain.ExecuteAssembly(GetExecutablePath());
+            try
+            {
+                domain = AppDomain.CreateDomain(executable, new Evidence(), setup);
+                domain.ExecuteAssembly(GetExecutablePath());
+            }
+            catch (Exception)
+            {
+                AppDomain.Unload(domain);
+                domain = null;
+                throw;
+            }
+
 
 
         }
@@ -155,8 +185,14 @@ namespace Tarro
         private void Stop()
         {
             lock (appLock)
-                 switch (runMode)
+            {
+                if (state != RuntimeState.Running)
+                    return;
+                state = RuntimeState.Stopping;
+
+                switch (runMode)
                 {
+
                     case RunMode.AppDomain:
                         try
                         {
@@ -183,9 +219,14 @@ namespace Tarro
                         }
                         break;
                     default:
-                        throw new InvalidOperationException("Unknown runmode");
+                        {
+                            state = RuntimeState.Running;
+                            throw new InvalidOperationException("Unknown runmode");
+                        }
                 }
-
+                log.Info("Application stopped ({0})", name);
+                state = RuntimeState.Stopped;
+            }
         }
 
 
