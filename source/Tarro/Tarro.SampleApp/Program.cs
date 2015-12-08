@@ -16,8 +16,11 @@ namespace Tarro.SampleApp
             Log("Starting");
             Log(Thread.CurrentThread.ManagedThreadId.ToString());
             Log("Conf: " + ConfigurationManager.AppSettings["setting"]);
-            Console.WriteLine(AppDomain.CurrentDomain.BaseDirectory);
-           // Console.ReadKey();
+            Log(AppDomain.CurrentDomain.BaseDirectory);
+            Log($"Input redirected: {Console.IsInputRedirected}");
+            if (Console.IsInputRedirected)
+                Console.Read();
+            Log("Exiting main method");
         }
 
         private static void Log(string message)
@@ -29,6 +32,7 @@ namespace Tarro.SampleApp
 
         static void CurrentDomain_DomainUnload(object sender, EventArgs e)
         {
+
             Log("Shutting down from Unload");
             timer.Dispose();
         }

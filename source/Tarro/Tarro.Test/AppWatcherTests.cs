@@ -22,7 +22,7 @@ namespace Tarro.Test
         {
             var called = false;
             watcher.AppChanged += (sender, args) => called = true;
-            File.Create(Path.Combine(FullPath, "created.txt")).Close();
+            File.Create(Path.Combine(FullPath, "created.config")).Close();
             Should.CompleteIn(() =>
             {
                 while (called == false)
@@ -35,9 +35,9 @@ namespace Tarro.Test
         public void WatcherRaisesWhenFileIsDeleted()
         {
             var called = false;
-            File.Create(Path.Combine(FullPath, "deleteme.txt")).Close();
+            File.Create(Path.Combine(FullPath, "deleteme.config")).Close();
             watcher.AppChanged += (sender, args) => called = true;
-            File.Delete(Path.Combine(FullPath, "deleteme.txt"));
+            File.Delete(Path.Combine(FullPath, "deleteme.config"));
             Should.CompleteIn(() =>
             {
                 while (called == false)
@@ -50,9 +50,9 @@ namespace Tarro.Test
         public void WatcherRaisesWhenFileIsRenamed()
         {
             var called = false;
-            File.Create(Path.Combine(FullPath, "before.txt")).Close();
+            File.Create(Path.Combine(FullPath, "before.config")).Close();
             watcher.AppChanged += (sender, args) => called = true;
-            File.Move(Path.Combine(FullPath, "before.txt"), Path.Combine(FullPath, "after.txt"));
+            File.Move(Path.Combine(FullPath, "before.config"), Path.Combine(FullPath, "after.config"));
             Should.CompleteIn(() =>
             {
                 while (called == false)
@@ -66,7 +66,7 @@ namespace Tarro.Test
         {
             var called = false;
             watcher.AfterQuietPeriod += (o, args) => called = true;
-            File.Create(Path.Combine(FullPath, "created.txt")).Close();
+            File.Create(Path.Combine(FullPath, "created.config")).Close();
             Should.CompleteIn(() =>
             {
                 while (called == false)
@@ -80,12 +80,12 @@ namespace Tarro.Test
         {
             var called = false;
             watcher.AfterQuietPeriod += (o, args) => called = true;
-            File.Create(Path.Combine(FullPath, "1.txt")).Close();
-            File.Create(Path.Combine(FullPath, "2.txt")).Close();
-            File.Create(Path.Combine(FullPath, "3.txt")).Close();
-            File.Create(Path.Combine(FullPath, "4.txt")).Close();
-            File.Create(Path.Combine(FullPath, "5.txt")).Close();
-            File.Create(Path.Combine(FullPath, "6.txt")).Close();
+            File.Create(Path.Combine(FullPath, "1.config")).Close();
+            File.Create(Path.Combine(FullPath, "2.config")).Close();
+            File.Create(Path.Combine(FullPath, "3.config")).Close();
+            File.Create(Path.Combine(FullPath, "4.config")).Close();
+            File.Create(Path.Combine(FullPath, "5.config")).Close();
+            File.Create(Path.Combine(FullPath, "6.config")).Close();
             called.ShouldBe(false);
             Should.CompleteIn(() =>
             {

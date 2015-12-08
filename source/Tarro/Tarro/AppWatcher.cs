@@ -37,6 +37,7 @@ namespace Tarro
         {
             log.Verbose($"Item renamed {e.OldName} -> {e.Name}");
             OnAppChanged(e.OldName);
+            OnAppChanged(e.Name);
         }
 
         void watcher_Deleted(object sender, FileSystemEventArgs e)
