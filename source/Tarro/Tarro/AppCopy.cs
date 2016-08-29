@@ -1,18 +1,18 @@
-using System;
+﻿using System;
 using System.IO;
 
 namespace Tarro
 {
     internal class AppCopy
     {
-         private readonly string cachePath;
+        private readonly string cachePath;
         private readonly string pathToApp;
         private readonly string executable;
 
 
         public AppCopy(string cachePath, string pathToApp, string executable)
         {
-              this.cachePath = cachePath;
+            this.cachePath = cachePath;
             this.pathToApp = pathToApp;
             this.executable = executable;
         }

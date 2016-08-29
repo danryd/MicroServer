@@ -2,6 +2,7 @@
 using System.IO;
 using System.Diagnostics;
 using System.Timers;
+using Tarro.Logging;
 
 namespace Tarro
 {
@@ -9,8 +10,9 @@ namespace Tarro
     internal class AppWatcher : IDisposable
     {
         private readonly FileSystemWatcher watcher;
-
+        private readonly ILog log = LogFactory.GetLogger<AppWatcher>();
         private readonly Timer timer;
+        private bool isQuietPeriod = false;
         public AppWatcher(string path, double timeoutInSeconds = 1)
         {
             watcher = new FileSystemWatcher(path);
@@ -22,44 +24,69 @@ namespace Tarro
             timer = new Timer(CalculateTimeoutInMs(timeoutInSeconds));
             timer.Elapsed += timer_Elapsed;
             timer.AutoReset = false;
-         
+
         }
 
         private static double CalculateTimeoutInMs(double timeoutInSeconds)
         {
-            return timeoutInSeconds*1000;
+            return timeoutInSeconds * 2000;
         }
 
 
         void watcher_Renamed(object sender, RenamedEventArgs e)
         {
-            OnAppChanged();
+            log.Verbose($"Item renamed {e.OldName} -> {e.Name}");
+            OnAppChanged(e.OldName);
+            OnAppChanged(e.Name);
         }
 
         void watcher_Deleted(object sender, FileSystemEventArgs e)
         {
-            OnAppChanged();
+            log.Verbose($"Item deleted {e.Name}");
+            OnAppChanged(e.Name);
         }
 
         void watcher_Created(object sender, FileSystemEventArgs e)
         {
-            OnAppChanged();
+            log.Verbose($"Item created {e.Name}");
+            OnAppChanged(e.Name);
         }
 
         void watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            OnAppChanged();
+            log.Verbose($"Item changed {e.Name}");
+            OnAppChanged(e.Name);
         }
 
         public event EventHandler<AppChangedEventHandlerArgs> AppChanged;
 
         public event EventHandler<AfterQuietPeriodEventArgs> AfterQuietPeriod;
 
-        protected virtual void OnAppChanged()
+        protected virtual void OnAppChanged(string name)
         {
-            timer.Enabled = true;
-            var handler = AppChanged;
-            if (handler != null) handler(this, new AppChangedEventHandlerArgs());
+            var lowerName = name.ToLower();
+            if (IsCodeOrConfig(lowerName))
+            {
+                ResetTimer();
+                if (!isQuietPeriod)
+                {
+                    isQuietPeriod = true;
+                    var handler = AppChanged;
+                    if (handler != null) handler(this, new AppChangedEventHandlerArgs());
+                }
+            }
+        }
+
+        private static bool IsCodeOrConfig(string lowerName)
+        {
+            return lowerName.EndsWith(".config") || lowerName.EndsWith(".exe") || lowerName.EndsWith(".dll");
+        }
+
+        private void ResetTimer()
+        {
+            log.Verbose($"Resetting timer");
+            timer.Stop();
+            timer.Start();
 
         }
 
@@ -70,6 +97,8 @@ namespace Tarro
 
         protected virtual void OnAfterQuietPeriod()
         {
+            log.Verbose($"Quiet period ended");
+            isQuietPeriod = false;
             var handler = AfterQuietPeriod;
             if (handler != null) handler(this, new AfterQuietPeriodEventArgs());
         }

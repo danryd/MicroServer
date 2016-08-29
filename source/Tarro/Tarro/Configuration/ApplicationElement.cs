@@ -25,5 +25,12 @@ namespace Tarro.Configuration
             get { return (string)this["executable"]; }
             set { this["executable"] = value; }
         }
+
+        [ConfigurationProperty("runMode", IsRequired = false, DefaultValue = Tarro.RunMode.AppDomain)]
+        public RunMode RunMode
+        {
+            get { return (RunMode)this["runMode"]; }
+            set { this["runMode"] = value; }
+        }
     }
 }

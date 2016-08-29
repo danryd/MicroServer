@@ -4,16 +4,8 @@ namespace Tarro.Configuration
 {
     internal class TarroSettings : ConfigurationSection
     {
-        private static readonly TarroSettings settings
-          = ConfigurationManager.GetSection("Tarro") as TarroSettings;
+        public static TarroSettings Settings { get; } = ConfigurationManager.GetSection("Tarro") as TarroSettings;
 
-        public static TarroSettings Settings
-        {
-            get
-            {
-                return settings;
-            }
-        }
         [ConfigurationProperty("instanceName", IsRequired = false)]
         public string InstanceName
         {
