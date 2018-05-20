@@ -73,6 +73,11 @@
     <Compile Include="Logging\DefaultLog.cs" />
     <Compile Include="Logging\LogSinks.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Management\IRouter.cs" />
+    <Compile Include="Management\HttpServer.cs" />
+    <Compile Include="Management\Response.cs" />
+    <Compile Include="Management\Router.cs" />
+    <Compile Include="Management\UrlRouter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime.cs" />
@@ -82,14 +87,14 @@
     <Compile Include="WindowsServiceInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Configuration\TarroConfiguration.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Management\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>

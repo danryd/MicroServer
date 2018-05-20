@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppWatcherTests.cs" />
+    <Compile Include="Management\HttpServerTests.cs" />
+    <Compile Include="Management\UrlMatcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tarro.Configuration;
 using Tarro.Logging;
-using Tarro.Management;
+//using Tarro.Management;
 
 namespace Tarro
 {
@@ -15,11 +15,11 @@ namespace Tarro
     {
         private readonly ILog log = LogFactory.GetLogger<Container>();
         private readonly List<ApplicationThread> appThreads;
-        private readonly ManagementApplication managementApplication;
+       // private readonly ManagementApplication managementApplication;
         public Container()
         {
             appThreads = new List<ApplicationThread>();
-            managementApplication = new ManagementApplication();
+          //  managementApplication = new ManagementApplication();
         }
         internal void Start()
         {
@@ -31,15 +31,15 @@ namespace Tarro
                 appThreads.Add(appThread);
             }
             
-            managementApplication.AddHandler<RouteHandler>(new RouteOptions("/", (async context => await Task.FromResult("Hello"))));
-            managementApplication.Start();
+            //managementApplication.AddHandler<Router>(new RouteOptions("/", (async context => await Task.FromResult("Hello"))));
+            //managementApplication.Start();
         }
 
         public void Dispose()
         {
             try
             {
-                managementApplication.Dispose();
+                //managementApplication.Dispose();
             }
             catch (Exception ex)
             {

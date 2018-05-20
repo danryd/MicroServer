@@ -28,7 +28,7 @@ namespace Tarro.Test
                 while (called == false)
                 {
                 }
-            }, TimeSpan.FromMilliseconds(40));
+            }, TimeSpan.FromMilliseconds(80));
             called.ShouldBe(true);
         }
 
@@ -58,7 +58,7 @@ namespace Tarro.Test
                 while (called == false)
                 {
                 }
-            }, TimeSpan.FromMilliseconds(40));
+            }, TimeSpan.FromMilliseconds(80));
         }
       
 
@@ -92,7 +92,7 @@ namespace Tarro.Test
                 while (called == false)
                 {
                 }
-            }, TimeSpan.FromMilliseconds(10));
+            }, TimeSpan.FromMilliseconds(20));
             called.ShouldBe(true);
         }
 
